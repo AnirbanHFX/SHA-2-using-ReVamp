@@ -115,21 +115,21 @@ int Sigma1(FILE *fp, int cyc, int tar, int mem2, int mem1) {  // Computation mem
    fprintf(fp, "Apply %d 0 00 000000 ", mem1); cyc++; // Reset wl mem1
    Rotate(0, fp);
 
-   fprintf(fp, "Read 4\n\n"); cyc++; // Read ~e
+   fprintf(fp, "Read 4\n\n"); cyc++;                  // Read ~e
 
    fprintf(fp, "Apply %d 1 01 000000 ", mem1); cyc++; // Store e41
    Rotate(41, fp);
 
-   fprintf(fp, "Read %d\n\n", mem1); cyc++; // Read e41
+   fprintf(fp, "Read %d\n\n", mem1); cyc++;           // Read e41
 
-   fprintf(fp, "Apply %d 1 00 000000 ", tar); cyc++; // (e14 XOR e18).~e41
+   fprintf(fp, "Apply %d 1 00 000000 ", tar); cyc++;  // (e14 XOR e18).~e41
    Rotate(0, fp);
    fprintf(fp, "Apply %d 1 01 000000 ", mem2); cyc++; // (e14 XOR e18) + ~e41
    Rotate(0, fp);
 
-   fprintf(fp, "Read %d\n\n", mem2); cyc++; // Read (e14 XOR e18) + ~e41
+   fprintf(fp, "Read %d\n\n", mem2); cyc++;           // Read (e14 XOR e18) + ~e41
 
-   fprintf(fp, "Apply %d 1 01 000000 ", tar); cyc++; // (e14 XOR e18) XOR e41
+   fprintf(fp, "Apply %d 1 01 000000 ", tar); cyc++;  // (e14 XOR e18) XOR e41
    Rotate(0, fp);
 
    fprintf(fp, "Apply %d 0 00 000000 ", mem2); cyc++; // RESET wl mem1, mem2
@@ -146,16 +146,16 @@ int Sigma0(FILE *fp, int cyc, int tar, int mem2, int mem1) {  // Computation mem
 
    fprintf(fp, "//The following code computes Sigma0 and stores it in wl %d\n\n", tar);
 
-   fprintf(fp, "Read 0\n\n"); cyc++; // Read ~a
-
-   fprintf(fp, "Apply %d 1 01 000000 ", tar); cyc++; // Write a28
+   fprintf(fp, "Read 0\n\n"); cyc++;                  // Read ~a
+ 
+   fprintf(fp, "Apply %d 1 01 000000 ", tar); cyc++;  // Write a28
    Rotate(28, fp);
    fprintf(fp, "Apply %d 1 01 000000 ", mem2); cyc++; // Write a28
    Rotate(28, fp);
    fprintf(fp, "Apply %d 1 01 000000 ", mem1); cyc++; // Write a28
    Rotate(28, fp);
 
-   fprintf(fp, "Read %d\n\n", tar); cyc++; // Read a28
+   fprintf(fp, "Read %d\n\n", tar); cyc++;            // Read a28
 
    fprintf(fp, "Apply %d 1 00 000000 ", tar); cyc++;  // a28.~a34
    Rotate(6, fp);
@@ -164,7 +164,7 @@ int Sigma0(FILE *fp, int cyc, int tar, int mem2, int mem1) {  // Computation mem
    fprintf(fp, "Apply %d 1 01 000000 ", mem1); cyc++; // a28 + ~a34
    Rotate(6, fp);
 
-   fprintf(fp, "Read %d\n\n", mem1); cyc++;  // Read a28 + ~a34
+   fprintf(fp, "Read %d\n\n", mem1); cyc++;           // Read a28 + ~a34
 
    fprintf(fp, "Apply %d 1 01 000000 ", tar); cyc++;  // a28 XOR a34
    Rotate(0, fp);
@@ -174,21 +174,21 @@ int Sigma0(FILE *fp, int cyc, int tar, int mem2, int mem1) {  // Computation mem
    fprintf(fp, "Apply %d 0 00 000000 ", mem1); cyc++; // Reset wl mem1
    Rotate(0, fp);
 
-   fprintf(fp, "Read 0\n\n"); cyc++; // Read ~a
+   fprintf(fp, "Read 0\n\n"); cyc++;                  // Read ~a
 
    fprintf(fp, "Apply %d 1 01 000000 ", mem1); cyc++; // Store a39
    Rotate(39, fp);
 
-   fprintf(fp, "Read %d\n\n", mem1); cyc++; // Read a39
+   fprintf(fp, "Read %d\n\n", mem1); cyc++;           // Read a39
 
-   fprintf(fp, "Apply %d 1 00 000000 ", tar); cyc++; // (a28 XOR a34).~a39
+   fprintf(fp, "Apply %d 1 00 000000 ", tar); cyc++;  // (a28 XOR a34).~a39
    Rotate(0, fp);
    fprintf(fp, "Apply %d 1 01 000000 ", mem2); cyc++; // (a28 XOR a34) + ~a39
    Rotate(0, fp);
 
-   fprintf(fp, "Read %d\n\n", mem2); cyc++; // Read (a28 XOR a34) + ~a39
+   fprintf(fp, "Read %d\n\n", mem2); cyc++;           // Read (a28 XOR a34) + ~a39
 
-   fprintf(fp, "Apply %d 1 01 000000 ", tar); cyc++; // (a28 XOR a34) XOR a39
+   fprintf(fp, "Apply %d 1 01 000000 ", tar); cyc++;  // (a28 XOR a34) XOR a39
    Rotate(0, fp);
 
    fprintf(fp, "Apply %d 0 00 000000 ", mem2); cyc++; // RESET wl mem1, mem2
@@ -215,7 +215,7 @@ int Maj(FILE *fp, int cyc, int tar, int m3, int m2, int m1) {
    fprintf(fp, "Apply %d 1 01 000000 ", m1); cyc++;  // Write a
    Rotate(0, fp);
 
-   fprintf(fp, "Read 1\n\n"); cyc++; // Read ~b  
+   fprintf(fp, "Read 1\n\n"); cyc++;                 // Read ~b  
 
    fprintf(fp, "Apply %d 1 00 000000 ", tar); cyc++; // a.b
    Rotate(0, fp);
@@ -224,12 +224,12 @@ int Maj(FILE *fp, int cyc, int tar, int m3, int m2, int m1) {
    fprintf(fp, "Apply %d 1 00 000000 ", m2); cyc++;  // a.b
    Rotate(0, fp);
 
-   fprintf(fp, "Read 2\n\n"); cyc++; // Read ~c 
+   fprintf(fp, "Read 2\n\n"); cyc++;                 // Read ~c 
 
    fprintf(fp, "Apply %d 1 00 000000 ", m1); cyc++;  // a.c
    Rotate(0, fp);
 
-   fprintf(fp, "Read %d\n\n", m1); cyc++; // Read a.c 
+   fprintf(fp, "Read %d\n\n", m1); cyc++;            // Read a.c 
 
    fprintf(fp, "Apply %d 1 00 000000 ", tar); cyc++; // (a.b).~(a.c)
    Rotate(0, fp);
@@ -238,7 +238,7 @@ int Maj(FILE *fp, int cyc, int tar, int m3, int m2, int m1) {
    fprintf(fp, "Apply %d 1 01 000000 ", m2); cyc++;  // (a.b) + ~(a.c)
    Rotate(0, fp);
 
-   fprintf(fp, "Read %d\n\n", m2); cyc++; // Read (a.b) + ~(a.c)
+   fprintf(fp, "Read %d\n\n", m2); cyc++;            // Read (a.b) + ~(a.c)
 
    fprintf(fp, "Apply %d 1 01 000000 ", tar); cyc++; // (a.b)XOR(a.c)
    Rotate(0, fp);
@@ -250,24 +250,24 @@ int Maj(FILE *fp, int cyc, int tar, int m3, int m2, int m1) {
    fprintf(fp, "Apply %d 0 00 000000 ", m1); cyc++;  
    Rotate(0, fp);
 
-   fprintf(fp, "Read 1\n\n"); cyc++; // Read ~b
+   fprintf(fp, "Read 1\n\n"); cyc++;                 // Read ~b
 
    fprintf(fp, "Apply %d 1 01 000000 ", m2); cyc++;  // Write b
    Rotate(0, fp);
 
-   fprintf(fp, "Read 2\n\n"); cyc++; // Read ~c
+   fprintf(fp, "Read 2\n\n"); cyc++;                 // Read ~c
 
    fprintf(fp, "Apply %d 1 00 000000 ", m2); cyc++;  // b.c
    Rotate(0, fp);
 
-   fprintf(fp, "Read %d\n\n", m2); cyc++; // Read b.c
+   fprintf(fp, "Read %d\n\n", m2); cyc++;            // Read b.c
 
    fprintf(fp, "Apply %d 1 00 000000 ", tar); cyc++; // (a.b XOR a.c).~(b.c)
    Rotate(0, fp);
    fprintf(fp, "Apply %d 1 01 000000 ", m3); cyc++;  // (a.b XOR a.c) + ~(b.c)
    Rotate(0, fp);
 
-   fprintf(fp, "Read %d\n\n", m3); cyc++; // Read (a.b XOR a.c) + ~(b.c)
+   fprintf(fp, "Read %d\n\n", m3); cyc++;            // Read (a.b XOR a.c) + ~(b.c)
 
    fprintf(fp, "Apply %d 1 01 000000 ", tar); cyc++; // (a.b XOR a.c) XOR (b.c)
    Rotate(0, fp);
@@ -278,6 +278,46 @@ int Maj(FILE *fp, int cyc, int tar, int m3, int m2, int m1) {
    Rotate(0, fp);
 
    return cyc;
+
+}
+
+int Sum(FILE *fp, int cyc, int a, int b, int m1, int m2, int m3, int m4) {
+
+   // Assuming A and B are initially non-inverted
+
+   fprintf(fp, "Read %d\n\n", a); cyc++;             // Read A
+
+   fprintf(fp, "Apply %d 1 01 000000 ", m1); cyc++   // Write ~A
+
+   fprintf(fp, "Read %d\n\n", m1); cyc++;            // Read ~A
+
+   fprintf(fp, "Apply %d 1 01 000000 ", m4); cyc++;  // Write A
+   Rotate(0, fp);
+   fprintf(fp, "Apply %d 1 01 000000 ", m3); cyc++;  // Write A
+   Rotate(0, fp);
+   fprintf(fp, "Apply %d 1 01 000000 ", m2); cyc++;  // Write A
+   Rotate(0, fp);
+
+   fprintf(fp, "Read %d\n\n", b); cyc++;             // Read B
+
+   fprintf(fp, "Apply %d 1 00 000000 ", m4); cyc++;  // A.~B
+   Rotate(0, fp);
+   fprintf(fp, "Apply %d 1 00 000000 ", m3); cyc++;  // A.~B
+   Rotate(0, fp);
+   fprintf(fp, "Apply %d 1 01 000000 ", m2); cyc++;  // A + ~B
+   Rotate(0, fp); 
+
+   fprintf(fp, "Read %d\n\n", m2); cyc++;            // Read A + ~B  
+
+   fprintf(fp, "Apply %d 1 01 000000 ", m4); cyc++;  // A XOR B
+   Rotate(0, fp);
+   fprintf(fp, "Apply %d 1 01 000000 ", m3); cyc++;  // A XOR B
+   Rotate(0, fp);
+
+   fprintf(fp, "Apply %d 0 00 000000 ", m2); cyc++;  // RESET m1, m2
+   Rotate(0, fp);
+   fprintf(fp, "Apply %d 0 00 000000 ", m1); cyc++;
+   Rotate(0, fp);    
 
 }
 
