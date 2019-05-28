@@ -32,7 +32,7 @@ int Load(FILE *fp, int cyc) {
 
 }
 
-int Ch_EFG(FILE *fp, int cyc, int mem1, int mem2, int tar) {  // Computation memory has NOT BEEN PREVIOUSLY CLEARED
+int Ch_EFG(FILE *fp, int cyc, int tar, int mem2, int mem1) {  // Computation memory has NOT BEEN PREVIOUSLY CLEARED
 			     // Leaves WordLine tar occupied
 
    fprintf(fp, "//The following code computes Ch(E,F,G) and stores it in wl %d\n\n", tar);
@@ -82,7 +82,7 @@ int Ch_EFG(FILE *fp, int cyc, int mem1, int mem2, int tar) {  // Computation mem
 
 }
 
-int Sigma1(FILE *fp, int cyc, int mem1, int mem2, int tar) {  // Computation memory NOT PREVIOUSLY CLEARED
+int Sigma1(FILE *fp, int cyc, int tar, int mem2, int mem1) {  // Computation memory NOT PREVIOUSLY CLEARED
 							  // Leaves wordline tar occupied
 
    fprintf(fp, "//The following code computes Sigma1 and stores it in wl %d\n\n", tar);
@@ -141,10 +141,10 @@ int Sigma1(FILE *fp, int cyc, int mem1, int mem2, int tar) {  // Computation mem
 
 }
 
-int Sigma0(FILE *fp, int cyc, int mem1, int mem2, int tar) {  // Computation memory NOT PREVIOUSLY CLEARED
+int Sigma0(FILE *fp, int cyc, int tar, int mem2, int mem1) {  // Computation memory NOT PREVIOUSLY CLEARED
 							  // Leaves wordline tar occupied
 
-   fprintf(fp, "//The following code computes Sigma1 and stores it in wl %d\n\n", tar);
+   fprintf(fp, "//The following code computes Sigma0 and stores it in wl %d\n\n", tar);
 
    fprintf(fp, "Read 0\n\n"); cyc++; // Read ~a
 
@@ -194,6 +194,87 @@ int Sigma0(FILE *fp, int cyc, int mem1, int mem2, int tar) {  // Computation mem
    fprintf(fp, "Apply %d 0 00 000000 ", mem2); cyc++; // RESET wl mem1, mem2
    Rotate(0, fp);
    fprintf(fp, "Apply %d 0 00 000000 ", mem1); cyc++; 
+   Rotate(0, fp);
+
+   return cyc;
+
+}
+
+int Maj(FILE *fp, int cyc, int tar, int m3, int m2, int m1) {
+
+   fprintf(fp, "//The following code computes Maj(A, B, C) and stores it in wl %d\n\n", tar);   
+
+   fprintf(fp, "Read 0\n\n"); cyc++; // Read ~a   
+
+   fprintf(fp, "Apply %d 1 01 000000 ", tar); cyc++; // Write a
+   Rotate(0, fp);
+   fprintf(fp, "Apply %d 1 01 000000 ", m3); cyc++;  // Write a
+   Rotate(0, fp);
+   fprintf(fp, "Apply %d 1 01 000000 ", m2); cyc++;  // Write a
+   Rotate(0, fp);
+   fprintf(fp, "Apply %d 1 01 000000 ", m1); cyc++;  // Write a
+   Rotate(0, fp);
+
+   fprintf(fp, "Read 1\n\n"); cyc++; // Read ~b  
+
+   fprintf(fp, "Apply %d 1 00 000000 ", tar); cyc++; // a.b
+   Rotate(0, fp);
+   fprintf(fp, "Apply %d 1 00 000000 ", m3); cyc++;  // a.b
+   Rotate(0, fp);
+   fprintf(fp, "Apply %d 1 00 000000 ", m2); cyc++;  // a.b
+   Rotate(0, fp);
+
+   fprintf(fp, "Read 2\n\n"); cyc++; // Read ~c 
+
+   fprintf(fp, "Apply %d 1 00 000000 ", m1); cyc++;  // a.c
+   Rotate(0, fp);
+
+   fprintf(fp, "Read %d\n\n", m1); cyc++; // Read a.c 
+
+   fprintf(fp, "Apply %d 1 00 000000 ", tar); cyc++; // (a.b).~(a.c)
+   Rotate(0, fp);
+   fprintf(fp, "Apply %d 1 00 000000 ", m3); cyc++;  // (a.b).~(a.c)
+   Rotate(0, fp);
+   fprintf(fp, "Apply %d 1 01 000000 ", m2); cyc++;  // (a.b) + ~(a.c)
+   Rotate(0, fp);
+
+   fprintf(fp, "Read %d\n\n", m2); cyc++; // Read (a.b) + ~(a.c)
+
+   fprintf(fp, "Apply %d 1 01 000000 ", tar); cyc++; // (a.b)XOR(a.c)
+   Rotate(0, fp);
+   fprintf(fp, "Apply %d 1 01 000000 ", m3); cyc++;  // (a.b)XOR(a.c)
+   Rotate(0, fp);
+
+   fprintf(fp, "Apply %d 0 00 000000 ", m2); cyc++;  // RESET wl m2, m1
+   Rotate(0, fp);
+   fprintf(fp, "Apply %d 0 00 000000 ", m1); cyc++;  
+   Rotate(0, fp);
+
+   fprintf(fp, "Read 1\n\n"); cyc++; // Read ~b
+
+   fprintf(fp, "Apply %d 1 01 000000 ", m2); cyc++;  // Write b
+   Rotate(0, fp);
+
+   fprintf(fp, "Read 2\n\n"); cyc++; // Read ~c
+
+   fprintf(fp, "Apply %d 1 00 000000 ", m2); cyc++;  // b.c
+   Rotate(0, fp);
+
+   fprintf(fp, "Read %d\n\n", m2); cyc++; // Read b.c
+
+   fprintf(fp, "Apply %d 1 00 000000 ", tar); cyc++; // (a.b XOR a.c).~(b.c)
+   Rotate(0, fp);
+   fprintf(fp, "Apply %d 1 01 000000 ", m3); cyc++;  // (a.b XOR a.c) + ~(b.c)
+   Rotate(0, fp);
+
+   fprintf(fp, "Read %d\n\n", m3); cyc++; // Read (a.b XOR a.c) + ~(b.c)
+
+   fprintf(fp, "Apply %d 1 01 000000 ", tar); cyc++; // (a.b XOR a.c) XOR (b.c)
+   Rotate(0, fp);
+
+   fprintf(fp, "Apply %d 0 00 000000 ", m3); cyc++;  // RESET wl m3, m2
+   Rotate(0, fp);
+   fprintf(fp, "Apply %d 0 00 000000 ", m2); cyc++;  
    Rotate(0, fp);
 
    return cyc;
