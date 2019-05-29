@@ -17,7 +17,7 @@ void Rotate(int c, FILE *fp) {  // Used for bit shifting
 
 }
 
-int Calculate_carrybits(FILE *fp, int cyc, int m2, int m1) {
+int Calculate_carrybits(FILE *fp, FILE* fp2, int cyc, int m2, int m1) {
 
    fprintf(fp, "Read %d\n\n", m2); cyc++;
 
@@ -60,6 +60,11 @@ int Calculate_carrybits(FILE *fp, int cyc, int m2, int m1) {
          fprintf(fp, "0 %d ", 63-i);
    }
    fprintf(fp, "\n\n");
+
+   fprintf(fp2, "%d ", cyc);
+   for(int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
 
    fprintf(fp, "Read %d\n\n", m2); cyc++;  // Read c32
 
@@ -131,6 +136,11 @@ int Calculate_carrybits(FILE *fp, int cyc, int m2, int m1) {
    }
    fprintf(fp, "\n\n");
 
+   fprintf(fp2, "%d ", cyc);
+   for(int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
    // Reset left half of m1
    // PIR Loads string of 1's
    fprintf(fp, "Apply %d 0 00 000000 ", m1); cyc++;
@@ -141,6 +151,11 @@ int Calculate_carrybits(FILE *fp, int cyc, int m2, int m1) {
          fprintf(fp, "0 %d ", 63-i);
    }
    fprintf(fp, "\n\n");
+
+   fprintf(fp2, "%d ", cyc);
+   for(int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
 
    // Copy c33 c34 ... c63 to m1 in inverted form
 
@@ -175,6 +190,11 @@ int Calculate_carrybits(FILE *fp, int cyc, int m2, int m1) {
    fprintf(fp, "Apply %d 0 00 000000 ", m1); cyc++;
    Rotate(0, fp);
 
+   fprintf(fp2, "%d ", cyc);
+   for(int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
    return cyc;
 
 }
@@ -194,7 +214,7 @@ int Load(FILE *fp, int cyc) {
 
 }
 
-int Ch_EFG(FILE *fp, int cyc, int tar, int mem2, int mem1) {  // Computation memory has NOT BEEN PREVIOUSLY CLEARED
+int Ch_EFG(FILE *fp, FILE *fp2, int cyc, int tar, int mem2, int mem1) {  // Computation memory has NOT BEEN PREVIOUSLY CLEARED
 			     // Leaves WordLine tar occupied
 
    fprintf(fp, "//The following code computes Ch(E,F,G) and stores it in wl %d\n\n", tar);
@@ -238,14 +258,25 @@ int Ch_EFG(FILE *fp, int cyc, int tar, int mem2, int mem1) {  // Computation mem
    // PIR Loads string of 1's
    fprintf(fp, "Apply %d 0 00 000000 ", mem2); cyc++; // RESET wl 8, 9
    Rotate(0, fp);
+
+   fprintf(fp2, "%d ", cyc);
+   for(int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
    fprintf(fp, "Apply %d 0 00 000000 ", mem1); cyc++; 
    Rotate(0, fp);
+
+   fprintf(fp2, "%d ", cyc);
+   for(int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
 
    return cyc;
 
 }
 
-int Sigma1(FILE *fp, int cyc, int tar, int mem2, int mem1) {  // Computation memory NOT PREVIOUSLY CLEARED
+int Sigma1(FILE *fp, FILE *fp2, int cyc, int tar, int mem2, int mem1) {  // Computation memory NOT PREVIOUSLY CLEARED
 							  // Leaves wordline tar occupied
 
    fprintf(fp, "//The following code computes Sigma1 and stores it in wl %d\n\n", tar);
@@ -298,14 +329,25 @@ int Sigma1(FILE *fp, int cyc, int tar, int mem2, int mem1) {  // Computation mem
    // PIR Loads string of 1's
    fprintf(fp, "Apply %d 0 00 000000 ", mem2); cyc++; // RESET wl mem1, mem2
    Rotate(0, fp);
+
+   fprintf(fp2, "%d ", cyc);
+   for(int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
    fprintf(fp, "Apply %d 0 00 000000 ", mem1); cyc++; 
    Rotate(0, fp);
+
+   fprintf(fp2, "%d ", cyc);
+   for(int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
 
    return cyc;
 
 }
 
-int Sigma0(FILE *fp, int cyc, int tar, int mem2, int mem1) {  // Computation memory NOT PREVIOUSLY CLEARED
+int Sigma0(FILE *fp, FILE *fp2, int cyc, int tar, int mem2, int mem1) {  // Computation memory NOT PREVIOUSLY CLEARED
 							  // Leaves wordline tar occupied
 
    fprintf(fp, "//The following code computes Sigma0 and stores it in wl %d\n\n", tar);
@@ -358,14 +400,25 @@ int Sigma0(FILE *fp, int cyc, int tar, int mem2, int mem1) {  // Computation mem
    // PIR Loads string of 1's
    fprintf(fp, "Apply %d 0 00 000000 ", mem2); cyc++; // RESET wl mem1, mem2
    Rotate(0, fp);
+
+   fprintf(fp2, "%d ", cyc);
+   for(int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
    fprintf(fp, "Apply %d 0 00 000000 ", mem1); cyc++; 
    Rotate(0, fp);
+
+   fprintf(fp2, "%d ", cyc);
+   for(int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
 
    return cyc;
 
 }
 
-int Maj(FILE *fp, int cyc, int tar, int m3, int m2, int m1) {
+int Maj(FILE *fp, FILE *fp2, int cyc, int tar, int m3, int m2, int m1) {
 
    fprintf(fp, "//The following code computes Maj(A, B, C) and stores it in wl %d\n\n", tar);   
 
@@ -440,14 +493,25 @@ int Maj(FILE *fp, int cyc, int tar, int m3, int m2, int m1) {
    // PIR Loads string of 1's
    fprintf(fp, "Apply %d 0 00 000000 ", m3); cyc++;  // RESET wl m3, m2
    Rotate(0, fp);
+
+   fprintf(fp2, "%d ", cyc);
+   for(int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
    fprintf(fp, "Apply %d 0 00 000000 ", m2); cyc++;  
    Rotate(0, fp);
+
+   fprintf(fp2, "%d ", cyc);
+   for(int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
 
    return cyc;
 
 }
 
-int Sum(FILE *fp, int cyc, int a, int b, int m1, int m2, int m3, int m4) {   // Computation memory NOT PREVIOUSLY CLEARED
+int Sum(FILE *fp, FILE *fp2, int cyc, int a, int b, int m1, int m2, int m3, int m4) {   // Computation memory NOT PREVIOUSLY CLEARED
 						                             // Stored A ++ B in m4, ++ is sum
 
    // Assuming A and B are initially non-inverted
@@ -457,12 +521,14 @@ int Sum(FILE *fp, int cyc, int a, int b, int m1, int m2, int m3, int m4) {   // 
       fprintf(fp, "Read %d\n\n", a); cyc++;             // Read A
 
       fprintf(fp, "Apply %d 1 01 000000 ", m1); cyc++;   // Write ~A
+      Rotate(0, fp);
 
    }
 
    else {
       // PIR Loads A
       fprintf(fp, "Apply %d 0 01 000000 ", m1); cyc++;  // Write ~A
+      Rotate(0, fp);
 
    }
 
@@ -509,8 +575,18 @@ int Sum(FILE *fp, int cyc, int a, int b, int m1, int m2, int m3, int m4) {   // 
    // PIR Loads string of 1's
    fprintf(fp, "Apply %d 0 00 000000 ", m2); cyc++;  // RESET m1, m2
    Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for(int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
    fprintf(fp, "Apply %d 0 00 000000 ", m1); cyc++;
    Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for(int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
 
    // Copy A in non_inverted form, half to m2 and half to m1
 
@@ -536,6 +612,10 @@ int Sum(FILE *fp, int cyc, int a, int b, int m1, int m2, int m3, int m4) {   // 
    // PIR Loads String of 1's
    fprintf(fp, "Apply %d 0 00 000000 ", m1); cyc++;  // Clear m1
    Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for(int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
 
    fprintf(fp, "Apply %d 1 01 000000 ", m2); cyc++;  // Copy a31 a30 a29 ... a0 to m2
    for(int i=0; i<32; i++) {
@@ -597,6 +677,7 @@ int Sum(FILE *fp, int cyc, int a, int b, int m1, int m2, int m3, int m4) {   // 
       }
       fprintf(fp, "\n\n");
 
+
       fprintf(fp, "Apply %d 0 01 000000 ", m1); cyc++;  // Copy ~b63 ~b62 ~b61 ... ~b32 to m1
       for(int i=0; i<32; i++) {
          fprintf(fp, "1 %d ", 63-i);
@@ -608,15 +689,27 @@ int Sum(FILE *fp, int cyc, int a, int b, int m1, int m2, int m3, int m4) {   // 
 
    }
 
-   cyc = Calculate_carrybits(fp, cyc, m2, m1);    // Line m2 contains (Carry >>> 1)
+   cyc = Calculate_carrybits(fp, fp2, cyc, m2, m1);    // Line m2 contains (Carry >>> 1)
                                                   // Carry bits need to be left rotated by 1
    fprintf(fp, "Read %d\n\n", m2); cyc++;         // Read (Carry >>> 1)
 
    fprintf(fp, "Apply %d 1 00 000000 ", m4); cyc++; // (A XOR B).~C
-   Rotate(63, fp);                                  // Is equivalent to a 1 bit leftrotate
+   for(int i=0; i<64; i++) {
+      if (62-i >=0 )
+         fprintf(fp, "1 %d ", 62-i);
+      else
+         fprintf(fp, "0 63 ");
+   }
+   fprintf(fp, "\n\n");
 
    fprintf(fp, "Apply %d 1 01 000000 ", m3); cyc++; // (A XOR B) + ~C
-   Rotate(63, fp);
+   for(int i=0; i<64; i++) {
+      if (62-i >=0 )
+         fprintf(fp, "1 %d ", 62-i);
+      else
+         fprintf(fp, "0 63 ");
+   }
+   fprintf(fp, "\n\n");
 
    fprintf(fp, "Read %d\n\n", m3); cyc++;         // Read (A XOR B) + ~C 
 
@@ -627,7 +720,7 @@ int Sum(FILE *fp, int cyc, int a, int b, int m1, int m2, int m3, int m4) {   // 
 
 }
 
-//int TestSum(FILE *, int); 
+int TestSum(FILE *, int); 
 
 int main() {
 
@@ -637,9 +730,36 @@ int main() {
 
    int cyc = 0;
 
-   //cyc = TestSum(fp, cyc);
+   cyc = TestSum(fp, cyc);
 
    return 0;
 
 }
 
+int TestSum(FILE *fp, int cyc) {
+
+   FILE *fp2 = fopen("SHA-2.inp", "w");
+
+   fprintf(fp, "Apply 0 0 01 000000 "); cyc++;
+   Rotate(0, fp);
+
+   fprintf(fp2, "%d ", cyc);
+   for(int i=0; i<60; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "1001\n\n");
+
+   fprintf(fp, "Apply 1 0 01 000000 "); cyc++;
+   Rotate(0, fp);
+
+   fprintf(fp2, "%d ", cyc);
+   for(int i=0; i<60; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "1010\n\n");
+
+
+
+   cyc = Sum(fp, fp2, cyc, 0, 1, 2, 3, 4, 5);
+
+   return cyc;
+
+}
