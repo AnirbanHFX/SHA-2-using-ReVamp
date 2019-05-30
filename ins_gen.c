@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdint.h>
 
 void Rotate(int c, FILE *fp) {  // Used for bit shifting
                                 // Rotate(0, fp) signifies no bit shifting
@@ -14,6 +15,57 @@ void Rotate(int c, FILE *fp) {  // Used for bit shifting
    }
 
    fprintf(fp, "\n\n");
+
+}
+
+void PIR_RoundConstants(FILE *fp2, int cyc, int i) {
+
+   uint64_t k[] = { 0x428a2f98d728ae22, 0x7137449123ef65cd, 0xb5c0fbcfec4d3b2f, 0xe9b5dba58189dbbc, 0x3956c25bf348b538, 
+              0x59f111f1b605d019, 0x923f82a4af194f9b, 0xab1c5ed5da6d8118, 0xd807aa98a3030242, 0x12835b0145706fbe, 
+              0x243185be4ee4b28c, 0x550c7dc3d5ffb4e2, 0x72be5d74f27b896f, 0x80deb1fe3b1696b1, 0x9bdc06a725c71235, 
+              0xc19bf174cf692694, 0xe49b69c19ef14ad2, 0xefbe4786384f25e3, 0x0fc19dc68b8cd5b5, 0x240ca1cc77ac9c65, 
+              0x2de92c6f592b0275, 0x4a7484aa6ea6e483, 0x5cb0a9dcbd41fbd4, 0x76f988da831153b5, 0x983e5152ee66dfab, 
+              0xa831c66d2db43210, 0xb00327c898fb213f, 0xbf597fc7beef0ee4, 0xc6e00bf33da88fc2, 0xd5a79147930aa725, 
+              0x06ca6351e003826f, 0x142929670a0e6e70, 0x27b70a8546d22ffc, 0x2e1b21385c26c926, 0x4d2c6dfc5ac42aed, 
+              0x53380d139d95b3df, 0x650a73548baf63de, 0x766a0abb3c77b2a8, 0x81c2c92e47edaee6, 0x92722c851482353b, 
+              0xa2bfe8a14cf10364, 0xa81a664bbc423001, 0xc24b8b70d0f89791, 0xc76c51a30654be30, 0xd192e819d6ef5218, 
+              0xd69906245565a910, 0xf40e35855771202a, 0x106aa07032bbd1b8, 0x19a4c116b8d2d0c8, 0x1e376c085141ab53, 
+              0x2748774cdf8eeb99, 0x34b0bcb5e19b48a8, 0x391c0cb3c5c95a63, 0x4ed8aa4ae3418acb, 0x5b9cca4f7763e373, 
+              0x682e6ff3d6b2b8a3, 0x748f82ee5defb2fc, 0x78a5636f43172f60, 0x84c87814a1f0ab72, 0x8cc702081a6439ec, 
+              0x90befffa23631e28, 0xa4506cebde82bde9, 0xbef9a3f7b2c67915, 0xc67178f2e372532b, 0xca273eceea26619c, 
+              0xd186b8c721c0c207, 0xeada7dd6cde0eb1e, 0xf57d4f7fee6ed178, 0x06f067aa72176fba, 0x0a637dc5a2c898a6, 
+              0x113f9804bef90dae, 0x1b710b35131c471b, 0x28db77f523047d84, 0x32caab7b40c72493, 0x3c9ebe0a15c9bebc, 
+              0x431d67c49c100d4c, 0x4cc5d4becb3e42b6, 0x597f299cfc657e2a, 0x5fcb6fab3ad6faec, 0x6c44198c4a475817};
+
+   uint64_t h;
+
+   fprintf(fp2, "%d ", cyc);
+   for(int c=63; c>=0; c--) {
+      h = (k[i]) >> c;
+      if (h & 1)
+         fprintf(fp2, "1");
+      else
+         fprintf(fp2, "0");
+   }
+   fprintf(fp2, "\n\n");
+
+}
+
+void PIR_Words(FILE *fp2, int cyc, int i) {
+
+   uint64_t k[64] = {0};
+
+   uint64_t h;
+
+   fprintf(fp2, "%d ", cyc);
+   for(int c=63; c>=0; c--) {
+      h = (k[i]) >> c;
+      if (h & 1)
+         fprintf(fp2, "1");
+      else
+         fprintf(fp2, "0");
+   }
+   fprintf(fp2, "\n\n");
 
 }
 
@@ -201,7 +253,12 @@ int Calculate_carrybits(FILE *fp, FILE* fp2, int cyc, int m2, int m1) {
 
 }
 
-int Load(FILE *fp, int cyc) {
+int Load(FILE *fp, FILE *fp2, int cyc) {
+
+   uint64_t h[] = { 0x6a09e667f3bcc908, 0xbb67ae8584caa73b, 0x3c6ef372fe94f82b, 0xa54ff53a5f1d36f1, 
+           0x510e527fade682d1, 0x9b05688c2b3e6c1f, 0x1f83d9abfb41bd6b, 0x5be0cd19137e2179 };
+   uint64_t k;
+   uint64_t m = 0xffffffffffffffff;
 
    fprintf(fp, "//The following code loads the initial states to the SHA-2 State partition in inverted form\n\n");
 
@@ -209,6 +266,16 @@ int Load(FILE *fp, int cyc) {
 
       fprintf(fp, "Apply %d 0 01 000000 ", i);  cyc++;
       Rotate(0, fp);
+
+      fprintf(fp2, "%d ", cyc);
+      for(int c=63; c>=0; c--) {
+         k = (h[i]) >> c;
+         if (k & 1)
+            fprintf(fp2, "1");
+         else
+            fprintf(fp2, "0");
+      }
+      fprintf(fp2, "\n\n");
 
    }
 
@@ -513,7 +580,7 @@ int Maj(FILE *fp, FILE *fp2, int cyc, int tar, int m3, int m2, int m1) {
 
 }
 
-int Sum(FILE *fp, FILE *fp2, int cyc, int a, int b, int m1, int m2, int m3, int m4, int ainverted) {   // Computation memory NOT PREVIOUSLY CLEARED
+int Sum(int round, FILE *fp, FILE *fp2, int cyc, int a, int b, int m1, int m2, int m3, int m4, int ainverted) {   // Computation memory NOT PREVIOUSLY CLEARED
 						                             // Stored A ++ B in m4, ++ is sum
 
    // Assuming B is initially non-inverted
@@ -533,6 +600,7 @@ int Sum(FILE *fp, FILE *fp2, int cyc, int a, int b, int m1, int m2, int m3, int 
          // PIR Loads A
          fprintf(fp, "Apply %d 0 01 000000 ", m1); cyc++;  // Write ~A
          Rotate(0, fp);
+         PIR_RoundConstants(fp2, cyc, round);
 
       }
 
@@ -570,10 +638,15 @@ int Sum(FILE *fp, FILE *fp2, int cyc, int a, int b, int m1, int m2, int m3, int 
       // PIR Loads B
       fprintf(fp, "Apply %d 0 00 000000 ", m4); cyc++;  // A.~B
       Rotate(0, fp);
+      PIR_Words(fp2, cyc, round);     
+
       fprintf(fp, "Apply %d 0 00 000000 ", m3); cyc++;  // A.~B
       Rotate(0, fp);
+      PIR_Words(fp2, cyc, round);    
+
       fprintf(fp, "Apply %d 0 01 000000 ", m2); cyc++;  // A + ~B
       Rotate(0, fp); 
+      PIR_Words(fp2, cyc, round);    
  
    }
 
@@ -622,6 +695,8 @@ int Sum(FILE *fp, FILE *fp2, int cyc, int a, int b, int m1, int m2, int m3, int 
          fprintf(fp, "Apply %d 0 01 000000 ", m1); cyc++;   // Write ~A
          Rotate(0, fp);
 
+         PIR_RoundConstants(fp2, cyc, round);
+
       }
 
       fprintf(fp, "Read %d\n\n", m1); cyc++;            // Read ~A
@@ -661,7 +736,7 @@ int Sum(FILE *fp, FILE *fp2, int cyc, int a, int b, int m1, int m2, int m3, int 
    for(int i=1; i<32; i++) {
       fprintf(fp, "1 %d ", 63-i);
    }
-   fprintf(fp, "\n\n");   
+   fprintf(fp, "\n\n");  
 
    // Copy B in inverted form, half to m2 and half to m1
    
@@ -690,7 +765,7 @@ int Sum(FILE *fp, FILE *fp2, int cyc, int a, int b, int m1, int m2, int m3, int 
    }
 
    else {
-
+//////////////////////////////////////////////
       // PIR Loads B
       fprintf(fp, "Apply %d 0 01 000000 ", m2); cyc++;  // Copy ~b31 ~b30 ~b29 ... ~b0 to m2
       for(int i=0; i<32; i++) {
@@ -701,6 +776,7 @@ int Sum(FILE *fp, FILE *fp2, int cyc, int a, int b, int m1, int m2, int m3, int 
       }
       fprintf(fp, "\n\n");
 
+      PIR_Words(fp2, cyc, round);    
 
       fprintf(fp, "Apply %d 0 01 000000 ", m1); cyc++;  // Copy ~b63 ~b62 ~b61 ... ~b32 to m1
       for(int i=0; i<32; i++) {
@@ -710,6 +786,8 @@ int Sum(FILE *fp, FILE *fp2, int cyc, int a, int b, int m1, int m2, int m3, int 
          fprintf(fp, "0 %d ", 31-i);
       }
       fprintf(fp, "\n\n");   
+
+      PIR_Words(fp2, cyc, round);    
 
    }
 
@@ -764,29 +842,317 @@ int Sum(FILE *fp, FILE *fp2, int cyc, int a, int b, int m1, int m2, int m3, int 
 }
 
 int TestSum(FILE *, int); 
-/*
-int Round(FILE *fp, FILE *fp2, int cyc, int i) {
 
-   
-
-
-   return cyc;
-
-} */
+int Round(FILE *, FILE *, int, int);
 
 int main() {
 
    FILE *fp, *fp2;
 
    fp = fopen("SHA-2.ins", "w");
+   fp2 = fopen("SHA-2.inp", "w");
 
    int cyc = 0;
 
-   cyc = TestSum(fp, cyc);
+   //cyc = TestSum(fp, cyc);
+
+   cyc = Load(fp, fp2, cyc);
+
+   for (int i=0; i<80; i++) {
+
+      cyc = Round(fp, fp2, cyc, i);
+
+   }
 
    return 0;
 
 }
+
+int Round(FILE *fp, FILE *fp2, int cyc, int i) {
+
+
+
+   uint64_t w[80] = {0};
+
+   // Ki ++ Wi
+   cyc = Sum(i, fp, fp2, cyc, -1, -1, 8, 9, 10, 11, 0);  // Correctness of Sum verified
+
+   // Ki ++ Wi ++ H
+   cyc = Sum(i, fp, fp2, cyc, 7, 11, 8, 9, 10, 12, 1);
+
+   // Reset wl 11
+   fprintf(fp, "Apply 11 0 00 000000 "); cyc++;
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
+   // Ch(E, F, G)
+   cyc = Ch_EFG(fp, fp2, cyc, 10, 9, 8);               // Correctness of Ch not verified
+
+   // G -> H                                     // Correctness of copying verified
+   fprintf(fp, "Read 6\n\n"); cyc++;             // Read ~G
+   fprintf(fp, "Apply 8 1 01 000000 "); cyc++;   // Write G
+   Rotate(0, fp); 
+   fprintf(fp, "Read 8\n\n"); cyc++;             // Read G
+
+   fprintf(fp, "Apply 8 0 00 000000 "); cyc++;   // Reset 8
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
+   fprintf(fp, "Apply 7 0 00 000000 "); cyc++;   // Reset H
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
+   fprintf(fp, "Apply 7 1 01 000000 "); cyc++;   // Copy ~G to H
+   Rotate(0, fp);
+
+   // F -> G
+   fprintf(fp, "Read 5\n\n"); cyc++;             // Read ~F
+   fprintf(fp, "Apply 8 1 01 000000 "); cyc++;   // Write F
+   Rotate(0, fp);
+   fprintf(fp, "Read 8\n\n"); cyc++;             // Read F
+
+   fprintf(fp, "Apply 8 0 00 000000 "); cyc++;   // Reset 8
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
+   fprintf(fp, "Apply 6 0 00 000000 "); cyc++;   // Reset G
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
+   fprintf(fp, "Apply 6 1 01 000000 "); cyc++;   // Copy ~F to G
+   Rotate(0, fp);
+
+   // E -> F
+   fprintf(fp, "Read 4\n\n"); cyc++;             // Read ~E
+   fprintf(fp, "Apply 8 1 01 000000 "); cyc++;   // Write E
+   Rotate(0, fp);
+   fprintf(fp, "Read 8\n\n"); cyc++;             // Read E
+
+   fprintf(fp, "Apply 8 0 00 000000 "); cyc++;   // Reset 8
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
+   fprintf(fp, "Apply 5 0 00 000000 "); cyc++;   // Reset F
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
+   fprintf(fp, "Apply 5 1 01 000000 "); cyc++;   // Copy ~E to F
+   Rotate(0, fp);
+
+   // Computation of Sigma1(E)
+   cyc = Sigma1(fp, fp2, cyc, 11, 9, 8);         // Correctness of Sigma1 not verified
+
+   // Ch ++ Sigma1
+   cyc = Sum(i, fp, fp2, cyc, 10, 11, 8, 9, 13, 14, 0);
+
+   fprintf(fp, "Apply 10 0 00 000000 "); cyc++;  // Reset 10
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
+   fprintf(fp, "Apply 11 0 00 000000 "); cyc++;  // Reset 11
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
+   // T1 = (Ch ++ Sigma1) ++ (Ki ++ Wi ++ H)
+   cyc = Sum(i, fp, fp2, cyc, 12, 14, 8, 9, 10, 11, 0);
+
+   fprintf(fp, "Apply 14 0 00 000000 "); cyc++;  // Reset 14
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
+   fprintf(fp, "Apply 12 0 00 000000 "); cyc++;  // Reset 12
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
+   // D ++ T1
+   cyc = Sum(i, fp, fp2, cyc, 3, 11, 8, 9, 10, 12, 1);
+
+   // Copy ~(D ++ T1) to ~E
+   fprintf(fp, "Read 12\n\n"); cyc++;             // Read (D ++ T1)
+
+   fprintf(fp, "Apply 4 0 00 000000 "); cyc++;    // Reset E
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");   
+
+   fprintf(fp, "Apply 4 1 01 000000 "); cyc++;    // Write ~(D ++ T1) to E
+   Rotate(0, fp);
+
+   // Reset (D ++ T1)
+   fprintf(fp, "Apply 12 0 00 000000 "); cyc++;   // Reset 12
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");   
+
+   // Maj(A, B, C)
+   cyc = Maj(fp, fp2, cyc, 12, 10, 9, 8);              // Correctness of Maj(A,B,C) not verified
+
+   // C -> D                                     // Correctness of copying verified
+   fprintf(fp, "Read 2\n\n"); cyc++;             // Read ~C
+   fprintf(fp, "Apply 8 1 01 000000 "); cyc++;   // Write C
+   Rotate(0, fp); 
+   fprintf(fp, "Read 8\n\n"); cyc++;             // Read C
+
+   fprintf(fp, "Apply 8 0 00 000000 "); cyc++;   // Reset 8
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
+   fprintf(fp, "Apply 3 0 00 000000 "); cyc++;   // Reset D
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
+   fprintf(fp, "Apply 3 1 01 000000 "); cyc++;   // Copy ~C to D
+   Rotate(0, fp);
+
+   // B -> C
+   fprintf(fp, "Read 1\n\n"); cyc++;             // Read ~B
+   fprintf(fp, "Apply 8 1 01 000000 "); cyc++;   // Write B
+   Rotate(0, fp);
+   fprintf(fp, "Read 8\n\n"); cyc++;             // Read B
+
+   fprintf(fp, "Apply 8 0 00 000000 "); cyc++;   // Reset 8
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
+   fprintf(fp, "Apply 2 0 00 000000 "); cyc++;   // Reset C
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
+   fprintf(fp, "Apply 2 1 01 000000 "); cyc++;   // Copy ~B to C
+   Rotate(0, fp);
+
+   // A -> B
+   fprintf(fp, "Read 0\n\n"); cyc++;             // Read ~A
+   fprintf(fp, "Apply 8 1 01 000000 "); cyc++;   // Write A
+   Rotate(0, fp);
+   fprintf(fp, "Read 8\n\n"); cyc++;             // Read A
+
+   fprintf(fp, "Apply 8 0 00 000000 "); cyc++;   // Reset 8
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
+   fprintf(fp, "Apply 1 0 00 000000 "); cyc++;   // Reset B
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
+   fprintf(fp, "Apply 1 1 01 000000 "); cyc++;   // Copy ~A to B
+   Rotate(0, fp);
+
+   // Computation of Sigma0(A)
+   cyc = Sigma0(fp, fp2, cyc, 10, 9, 8);               // Correctness of Sigma0 not verified
+
+   // Maj(A,B,C) ++ Sigma0
+   cyc = Sum(i, fp, fp2, cyc, 10, 12, 8, 9, 13, 14, 0);
+
+   fprintf(fp, "Apply 10 0 00 000000 "); cyc++;  // Reset 10
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
+   fprintf(fp, "Apply 12 0 00 000000 "); cyc++;  // Reset 12
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
+   // T1 ++ T2
+   cyc = Sum(i, fp, fp2, cyc, 11, 14, 8, 9, 10, 12, 0);
+
+   // Copy ~(T1 ++ T2) to ~A
+   fprintf(fp, "Read 12\n\n"); cyc++;             // Read (T2 ++ T1)
+
+   fprintf(fp, "Apply 0 0 00 000000 "); cyc++;    // Reset A
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");   
+
+   fprintf(fp, "Apply 0 1 01 000000 "); cyc++;    // Write ~(D ++ T1) to A
+   Rotate(0, fp);
+
+   fprintf(fp, "Apply 11 0 00 000000 "); cyc++;  // Reset 11
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
+   fprintf(fp, "Apply 12 0 00 000000 "); cyc++;  // Reset 12
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
+   fprintf(fp, "Apply 14 0 00 000000 "); cyc++;  // Reset 14
+   Rotate(0, fp);
+   fprintf(fp2, "%d ", cyc);
+   for (int i=0; i<64; i++)
+      fprintf(fp2, "1");
+   fprintf(fp2, "\n\n");
+
+   return cyc;
+
+} 
 
 int TestSum(FILE *fp, int cyc) {
 
@@ -796,19 +1162,19 @@ int TestSum(FILE *fp, int cyc) {
    Rotate(0, fp);
 
    fprintf(fp2, "%d ", cyc);
-   for(int i=0; i<50; i++)
-      fprintf(fp2, "1");
-   fprintf(fp2, "01100101101101\n\n");
+   //for(int i=0; i<50; i++)
+      //fprintf(fp2, "1");
+   fprintf(fp2, "0100001010001010001011111001100011010111001010001010111000100010\n\n");
 
    fprintf(fp, "Apply 1 0 01 000000 "); cyc++;
    Rotate(0, fp);
 
    fprintf(fp2, "%d ", cyc);
-   for(int i=0; i<50; i++)
+   for(int i=0; i<64; i++)
       fprintf(fp2, "1");
-   fprintf(fp2, "10011001010011\n\n");
+   fprintf(fp2, "\n\n");
 
-   cyc = Sum(fp, fp2, cyc, 0, 1, 2, 3, 4, 5, 0);
+   cyc = Sum(0, fp, fp2, cyc, 0, 1, 2, 3, 4, 5, 1);
 
    return cyc;
 
