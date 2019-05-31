@@ -1,0 +1,25 @@
+{
+    "dim": {
+        "m": 15,
+        "n": 64
+    },
+    "filename": {
+        "varin": "",
+        "input": "SHA-2.inp",
+        "ins_mem": "SHA-2.ins",
+        "output": "SHA-2",
+        "varout": ""
+    },
+    "simulation": {
+        "gen_pwl": 0,
+        "cycles": 0,
+        "print_ins": 1,
+        "verbose": 0
+    },
+    "voltage": {
+        "0": -2.4,
+        "1": 2.4,
+        "delta": 5,
+        "period": 50
+    }
+}
