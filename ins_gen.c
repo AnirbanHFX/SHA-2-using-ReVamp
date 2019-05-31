@@ -53,7 +53,7 @@ void PIR_RoundConstants(FILE *fp2, int cyc, int i) {
 
 void PIR_Words(FILE *fp2, int cyc, int i) {
 
-   uint64_t k[64] = {0};
+   uint64_t k[80] = {0};
 
    uint64_t h;
 
@@ -765,7 +765,7 @@ int Sum(int round, FILE *fp, FILE *fp2, int cyc, int a, int b, int m1, int m2, i
    }
 
    else {
-//////////////////////////////////////////////
+
       // PIR Loads B
       fprintf(fp, "Apply %d 0 01 000000 ", m2); cyc++;  // Copy ~b31 ~b30 ~b29 ... ~b0 to m2
       for(int i=0; i<32; i++) {
@@ -889,7 +889,7 @@ int Round(FILE *fp, FILE *fp2, int cyc, int i) {
    fprintf(fp2, "\n\n");
 
    // Ch(E, F, G)
-   cyc = Ch_EFG(fp, fp2, cyc, 10, 9, 8);               // Correctness of Ch not verified
+   cyc = Ch_EFG(fp, fp2, cyc, 10, 9, 8);         // Correctness of Ch verified against reference
 
    // G -> H                                     // Correctness of copying verified
    fprintf(fp, "Read 6\n\n"); cyc++;             // Read ~G
@@ -961,7 +961,7 @@ int Round(FILE *fp, FILE *fp2, int cyc, int i) {
    Rotate(0, fp);
 
    // Computation of Sigma1(E)
-   cyc = Sigma1(fp, fp2, cyc, 11, 9, 8);         // Correctness of Sigma1 not verified
+   cyc = Sigma1(fp, fp2, cyc, 11, 9, 8);         // Correctness of Sigma1 verified against reference
 
    // Ch ++ Sigma1
    cyc = Sum(i, fp, fp2, cyc, 10, 11, 8, 9, 13, 14, 0);
@@ -981,7 +981,7 @@ int Round(FILE *fp, FILE *fp2, int cyc, int i) {
    fprintf(fp2, "\n\n");
 
    // T1 = (Ch ++ Sigma1) ++ (Ki ++ Wi ++ H)
-   cyc = Sum(i, fp, fp2, cyc, 12, 14, 8, 9, 10, 11, 0);
+   cyc = Sum(i, fp, fp2, cyc, 12, 14, 8, 9, 10, 11, 0);   // Correctness of T1 verified against reference
 
    fprintf(fp, "Apply 14 0 00 000000 "); cyc++;  // Reset 14
    Rotate(0, fp);
@@ -1022,7 +1022,7 @@ int Round(FILE *fp, FILE *fp2, int cyc, int i) {
    fprintf(fp2, "\n\n");   
 
    // Maj(A, B, C)
-   cyc = Maj(fp, fp2, cyc, 12, 10, 9, 8);              // Correctness of Maj(A,B,C) not verified
+   cyc = Maj(fp, fp2, cyc, 12, 10, 9, 8);        // Correctness of Maj(A,B,C) verified against reference
 
    // C -> D                                     // Correctness of copying verified
    fprintf(fp, "Read 2\n\n"); cyc++;             // Read ~C
@@ -1094,10 +1094,10 @@ int Round(FILE *fp, FILE *fp2, int cyc, int i) {
    Rotate(0, fp);
 
    // Computation of Sigma0(A)
-   cyc = Sigma0(fp, fp2, cyc, 10, 9, 8);               // Correctness of Sigma0 not verified
+   cyc = Sigma0(fp, fp2, cyc, 10, 9, 8);         // Correctness of Sigma0 verified against reference
 
    // Maj(A,B,C) ++ Sigma0
-   cyc = Sum(i, fp, fp2, cyc, 10, 12, 8, 9, 13, 14, 0);
+   cyc = Sum(i, fp, fp2, cyc, 10, 12, 8, 9, 13, 14, 0);  // Correctness of T2 verified
 
    fprintf(fp, "Apply 10 0 00 000000 "); cyc++;  // Reset 10
    Rotate(0, fp);
